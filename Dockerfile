@@ -25,7 +25,9 @@ RUN cargo build --release -p alsa_pcm_inferno
 RUN git clone --recurse-submodules -b inferno-dev \
     https://github.com/teodly/statime /build/statime
 WORKDIR /build/statime
-RUN cargo build --release -p statime-linux
+RUN cargo build --release -p statime-linux && \
+    find target/release -maxdepth 1 -type f -executable ! -name '*.so' \
+    | head -1 | xargs -I{} cp {} /build/statime-bin
 
 # ─── Stage 2: Runtime ────────────────────────────────────────────────────────
 FROM debian:trixie-slim
@@ -46,8 +48,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iproute2 \
     && rm -rf /var/lib/apt/lists/*
 
-# statime binary
-COPY --from=builder /build/statime/target/release/statime-linux /usr/local/bin/statime
+# statime binary (name discovered at build time)
+COPY --from=builder /build/statime-bin /usr/local/bin/statime
 
 # inferno ALSA plugin — installed to architecture-specific alsa-lib dir
 COPY --from=builder \
