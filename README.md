@@ -1,6 +1,8 @@
-# inferno-dante
+# airplay-to-dante
 
-A Docker container that bridges AirPlay audio into a Dante network.
+A Docker container that bridges AirPlay audio into a Dante network via [inferno](https://github.com/teodly/inferno).
+
+> Attention: This has NOT been tested yet. I created a PoC for this on my NAS in an LXC container so far and it worked. This is the attempt to put the setup into a docker container.
 
 ```
 AirPlay (iPhone/Mac) → shairport-sync → PipeWire → inferno ALSA PCM → Dante network
@@ -91,14 +93,6 @@ dbus → avahi-daemon → statime → pipewire-inferno → shairport-sync
 ```
 
 `pipewire-inferno` starts PipeWire, then WirePlumber, then creates the inferno ALSA sink node via `pw-cli`. The PipeWire node (`inferno_sink`) persists after node creation thanks to `object.linger=1`.
-
-## Building for x86_64 on Apple Silicon
-
-```bash
-docker buildx build --platform linux/amd64 -t inferno-dante:latest .
-```
-
-The Rust builder stage runs under QEMU emulation — expect 15–30 min on first build.
 
 ## Dante state persistence
 
