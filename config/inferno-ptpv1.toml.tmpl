@@ -1,0 +1,14 @@
+loglevel = "${INFERNO_LOG_LEVEL}"
+
+sdo-id = 0
+domain = 0
+priority1 = 251
+virtual-system-clock = true
+virtual-system-clock-base = "monotonic_raw"
+usrvclock-export = true
+
+[[port]]
+interface = "${DANTE_INTERFACE}"
+network-mode = "ipv4"
+hardware-clock = "none"
+protocol-version = "PTPv1"

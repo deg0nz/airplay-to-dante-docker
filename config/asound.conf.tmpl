@@ -1,0 +1,12 @@
+pcm.inferno {
+    type inferno
+    NAME        "${DANTE_DEVICE_NAME}"
+    SAMPLE_RATE "${DANTE_SAMPLE_RATE}"
+    TX_CHANNELS "${DANTE_TX_CHANNELS}"
+    RX_CHANNELS "${DANTE_RX_CHANNELS}"
+    BIND_IP     "${DANTE_BIND_IP}"
+    hint {
+        show on
+        description "Inferno Dante Virtual Soundcard"
+    }
+}

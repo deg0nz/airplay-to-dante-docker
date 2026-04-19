@@ -1,0 +1,16 @@
+[Unit]
+Description=Statime PTP Daemon (inferno-dev fork)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/inferno-dante/env
+ExecStart=/usr/local/bin/statime -c /etc/inferno-dante/inferno-ptpv1.toml
+Restart=always
+RestartSec=5
+AmbientCapabilities=CAP_SYS_TIME
+CapabilityBoundingSet=CAP_SYS_TIME
+
+[Install]
+WantedBy=multi-user.target

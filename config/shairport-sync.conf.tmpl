@@ -1,0 +1,14 @@
+general = {
+    name = "${AIRPLAY_NAME}";
+    port = 5000;
+};
+
+// PipeWire output backend.
+// sink_name must match node.name set in create-pipewire-sink.sh.
+pw = {
+    application_name = "Shairport Sync";
+    sink_name = "inferno_sink";
+};
+
+// Avahi interface binding in avahi-daemon.conf restricts AirPlay
+// discovery to the client VLAN — no per-interface config needed here.

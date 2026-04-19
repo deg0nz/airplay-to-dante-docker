@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  inferno-dante:
+    build: .
+    container_name: inferno-dante
+    hostname: ${DANTE_DEVICE_NAME:-inferno}
+    environment:
+      AIRPLAY_NAME:      ${AIRPLAY_NAME:-Dante Bridge}
+      DANTE_DEVICE_NAME: ${DANTE_DEVICE_NAME:-inferno}
+      DANTE_INTERFACE:   eth0           # first network → Dante VLAN
+      AIRPLAY_INTERFACE: eth1           # second network → client VLAN
+      DANTE_BIND_IP:     ""             # empty = auto-detected from eth0
+      DANTE_SAMPLE_RATE: "44100"
+      DANTE_TX_CHANNELS: "2"
+      DANTE_RX_CHANNELS: "2"
+      INFERNO_LOG_LEVEL: "info"
+    networks:
+      # eth0: Dante VLAN — inferno, statime, PTP multicast
+      dante_net:
+        ipv4_address: ${DANTE_IP}
+      # eth1: client VLAN — shairport-sync, Avahi/mDNS
+      client_net:
+        ipv4_address: ${AIRPLAY_IP}
+    cap_add:
+      - SYS_TIME    # statime: clock_adjtime()
+      - NET_ADMIN   # macvlan, joining multicast groups
+      - NET_RAW     # PTP timestamps
+    security_opt:
+      - seccomp:unconfined
+    tmpfs:
+      - /run
+      - /run/lock
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - inferno_state:/root/.local/state/inferno_aoip
+    restart: unless-stopped
+
+networks:
+  dante_net:
+    driver: macvlan
+    driver_opts:
+      parent: ${DANTE_HOST_INTERFACE:-eth0}
+    ipam:
+      config:
+        - subnet:  ${DANTE_SUBNET:-10.1.1.0/24}
+          gateway: ${DANTE_GATEWAY:-10.1.1.1}
+
+  client_net:
+    driver: macvlan
+    driver_opts:
+      parent: ${AIRPLAY_HOST_INTERFACE:-eth1}
+    ipam:
+      config:
+        - subnet:  ${AIRPLAY_SUBNET:-192.168.1.0/24}
+          gateway: ${AIRPLAY_GATEWAY:-192.168.1.1}
+
+volumes:
+  inferno_state:

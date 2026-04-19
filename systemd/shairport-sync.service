@@ -1,0 +1,16 @@
+[Unit]
+Description=Shairport Sync AirPlay Receiver
+After=pipewire-inferno.service avahi-daemon.service
+Requires=avahi-daemon.service
+
+[Service]
+Type=simple
+Environment=XDG_RUNTIME_DIR=/run/pipewire
+Environment=PIPEWIRE_RUNTIME_DIR=/run/pipewire
+EnvironmentFile=/etc/inferno-dante/env
+ExecStart=/usr/local/bin/shairport-sync -c /etc/inferno-dante/shairport-sync.conf
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
